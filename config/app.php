@@ -230,5 +230,5 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
     ],
-
+    'default_redirect_url' => 'https://netflix.com',
 ];
