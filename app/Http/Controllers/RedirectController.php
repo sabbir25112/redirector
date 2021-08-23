@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
+use Jenssegers\Agent\Agent;
 
 class RedirectController extends Controller
 {
@@ -104,6 +105,7 @@ class RedirectController extends Controller
 
     private function storeAnalytics($domain, $redirect_url)
     {
+        $Agent = new Agent();
         try {
             $subIds = [
                 'subId',
@@ -130,6 +132,8 @@ class RedirectController extends Controller
                 'origin'        => $domain,
                 'destination'   => $redirect_url,
                 'request'       => json_encode(\request()->all()),
+                'browser'       => $Agent->browser(),
+                'os_name'       => $Agent->platform(),
             ]);
         } catch (\Exception $exception) {
             Log::error($exception);
@@ -140,6 +144,8 @@ class RedirectController extends Controller
                 'origin'        => $domain,
                 'destination'   => $redirect_url,
                 'request'       => json_encode(\request()->all()),
+                'browser'       => $Agent->browser(),
+                'os_name'       => $Agent->platform(),
             ]);
         }
     }
