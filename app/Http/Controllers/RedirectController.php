@@ -11,13 +11,19 @@ class RedirectController extends Controller
 {
     public function redirectToDestination()
     {
-        $match = [];
-        $host = request()->header('host');
-        preg_match('/^(?:http:\/\/|www\.|https:\/\/)([^\/]+)/', $host, $match);
-        $domain = $match[1];
+        try {
+            $match = [];
+            $host = request()->header('host');
+            preg_match('/^(?:http:\/\/|www\.|https:\/\/)([^\/]+)/', $host, $match);
+            $domain = $match[1];
 
-        $redirect_url = $this->getRedirectURL($domain);
-        $this->storeAnalytics($domain, $redirect_url);
+            $redirect_url = $this->getRedirectURL($domain);
+            $this->storeAnalytics($domain, $redirect_url);
+        } catch (\Exception $exception) {
+            $host = request()->header('host');
+            $redirect_url = $this->getRedirectURL($host);
+            $this->storeAnalytics($host, $redirect_url);
+        }
 
         return \redirect()->away($redirect_url);
     }
@@ -93,7 +99,7 @@ class RedirectController extends Controller
     {
         $redirect = Redirect::where('incoming', 'like', "%" . $domain)->first();
         if (!$redirect) return config('app.default_redirect_url');
-        return $redirect;
+        return $redirect->outgoing;
     }
 
     private function storeAnalytics($domain, $redirect_url)
@@ -125,7 +131,6 @@ class RedirectController extends Controller
                 'destination'   => $redirect_url,
                 'request'       => json_encode(\request()->all()),
             ]);
-            throw new \Exception("OKK");
         } catch (\Exception $exception) {
             Log::error($exception);
 
