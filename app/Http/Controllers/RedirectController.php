@@ -19,11 +19,11 @@ class RedirectController extends Controller
             $domain = $match[1];
 
             $redirect_url = $this->getRedirectURL($domain);
-            $this->storeAnalytics($domain, $redirect_url);
+            $redirect_url = $this->storeAnalytics($domain, $redirect_url);
         } catch (\Exception $exception) {
             $host = request()->header('host');
             $redirect_url = $this->getRedirectURL($host);
-            $this->storeAnalytics($host, $redirect_url);
+            $redirect_url = $this->storeAnalytics($host, $redirect_url);
         }
 
         return \redirect()->away($redirect_url);
@@ -118,6 +118,32 @@ class RedirectController extends Controller
                 'Sub_ID',
                 'SUB_ID',
                 'suBId',
+                'a',
+                'b',
+                'c',
+                'd',
+                'e',
+                'f',
+                'g',
+                'h',
+                'i',
+                'j',
+                'k',
+                'l',
+                'm',
+                'n',
+                'o',
+                'p',
+                'q',
+                'r',
+                's',
+                't',
+                'u',
+                'v',
+                'w',
+                'x',
+                'y',
+                'z',
             ];
 
             foreach ($subIds as $subId) {
@@ -125,6 +151,11 @@ class RedirectController extends Controller
 
                 if ($user_identity) break;
             }
+
+            if ($user_identity == null) {
+                $redirect_url = config('app.default_redirect_url');
+            }
+
             Analytics::create([
                 'subId'         => $user_identity,
                 'time'          => Carbon::now(),
@@ -148,5 +179,6 @@ class RedirectController extends Controller
                 'os_name'       => $Agent->platform(),
             ]);
         }
+        return $redirect_url;
     }
 }
